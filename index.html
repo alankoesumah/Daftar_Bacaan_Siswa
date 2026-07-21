@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pencatatan Buku Baca Siswa</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<div class="max-w-2xl mx-auto px-4 py-6">
+
+  <!-- HEADER -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-semibold text-slate-800">Pencatatan Buku Baca</h1>
+    <span id="tahunAjaranLabel" class="text-sm text-slate-500"></span>
+  </div>
+
+  <!-- BREADCRUMB / TOMBOL KEMBALI -->
+  <div id="breadcrumb" class="hidden mb-4">
+    <button onclick="tampilkanViewKelas()" class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+      &larr; Kembali ke daftar kelas
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loading" class="text-center text-slate-400 py-10">Memuat data...</div>
+
+  <!-- VIEW 1: PILIH KELAS -->
+  <div id="viewKelas" class="hidden">
+    <p class="text-sm text-slate-500 mb-3">Pilih kelas</p>
+    <div id="gridKelas" class="grid grid-cols-3 sm:grid-cols-4 gap-3"></div>
+  </div>
+
+  <!-- VIEW 2: DAFTAR SISWA -->
+  <div id="viewSiswa" class="hidden">
+    <p class="text-sm text-slate-500 mb-3">Kelas <span id="labelKelasAktif" class="font-medium text-slate-700"></span></p>
+    <div id="listSiswa" class="space-y-2"></div>
+  </div>
+
+</div>
+
+<!-- MODAL: INPUT BUKU -->
+<div id="modalInput" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-xl w-full max-w-md p-5">
+    <h2 class="font-semibold text-slate-800 mb-1">Input buku dibaca</h2>
+    <p id="infoSiswaInput" class="text-sm text-slate-500 mb-4"></p>
+
+    <div id="daftarInputBuku" class="space-y-2"></div>
+
+    <button onclick="tambahBarisJudul()" class="mt-2 text-sm text-blue-600 hover:underline">+ Tambah buku lain</button>
+
+    <div class="flex gap-2 mt-5">
+      <button onclick="tutupModalInput()" class="flex-1 py-2 rounded-lg border border-slate-300 text-slate-600">Batal</button>
+      <button onclick="simpanSemuaBuku()" id="btnSimpan" class="flex-1 py-2 rounded-lg bg-blue-600 text-white font-medium">Simpan semua</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: RIWAYAT -->
+<div id="modalRiwayat" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-xl w-full max-w-md p-5 max-h-[80vh] flex flex-col">
+    <h2 class="font-semibold text-slate-800 mb-1">Riwayat baca</h2>
+    <p id="infoSiswaRiwayat" class="text-sm text-slate-500 mb-4"></p>
+
+    <div id="listRiwayat" class="space-y-2 overflow-y-auto flex-1"></div>
+
+    <button onclick="tutupModalRiwayat()" class="mt-4 py-2 rounded-lg border border-slate-300 text-slate-600">Tutup</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// GANTI dengan URL Web App hasil Deploy dari Apps Script kamu
+// ============================================================
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyE1eoQaOpPH4anfoZm-vOuOehIu5l_LgEHigH-XIy-PvRvCBrLFjoRCv-1JsOokPzGGA/exec';
+
+let siswaAktif = null; // { id, nama, kelas }
+
+// ---------- INIT ----------
+window.addEventListener('DOMContentLoaded', muatDaftarKelas);
+
+// ---------- VIEW HELPERS ----------
+function tampilkanLoading(tampil) {
+  document.getElementById('loading').classList.toggle('hidden', !tampil);
+}
+
+function tampilkanViewKelas() {
+  document.getElementById('viewSiswa').classList.add('hidden');
+  document.getElementById('breadcrumb').classList.add('hidden');
+  document.getElementById('viewKelas').classList.remove('hidden');
+}
+
+function tampilkanViewSiswa() {
+  document.getElementById('viewKelas').classList.add('hidden');
+  document.getElementById('breadcrumb').classList.remove('hidden');
+  document.getElementById('viewSiswa').classList.remove('hidden');
+}
+
+// ---------- AMBIL DAFTAR KELAS ----------
+async function muatDaftarKelas() {
+  tampilkanLoading(true);
+  try {
+    const res = await fetch(`${WEBAPP_URL}?action=getKelas`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    document.getElementById('tahunAjaranLabel').textContent = data.tahunAjaranAktif || '';
+
+    const grid = document.getElementById('gridKelas');
+    grid.innerHTML = '';
+    data.kelas.forEach(kelas => {
+      const btn = document.createElement('button');
+      btn.className = 'py-3 rounded-lg bg-white border border-slate-200 shadow-sm text-slate-700 font-medium hover:border-blue-400 hover:text-blue-600';
+      btn.textContent = kelas;
+      btn.onclick = () => muatDaftarSiswa(kelas);
+      grid.appendChild(btn);
+    });
+
+    tampilkanViewKelas();
+  } catch (err) {
+    alert('Gagal memuat daftar kelas: ' + err.message);
+  } finally {
+    tampilkanLoading(false);
+  }
+}
+
+// ---------- AMBIL DAFTAR SISWA ----------
+async function muatDaftarSiswa(kelas) {
+  tampilkanLoading(true);
+  try {
+    const res = await fetch(`${WEBAPP_URL}?action=getSiswa&kelas=${encodeURIComponent(kelas)}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    document.getElementById('labelKelasAktif').textContent = kelas;
+
+    const list = document.getElementById('listSiswa');
+    list.innerHTML = '';
+
+    if (data.siswa.length === 0) {
+      list.innerHTML = '<p class="text-sm text-slate-400 text-center py-6">Belum ada siswa terdaftar di kelas ini</p>';
+    }
+
+    data.siswa.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'flex items-center justify-between bg-white border border-slate-200 rounded-lg px-4 py-3';
+      card.innerHTML = `
+        <span class="font-medium text-slate-700">${escapeHtml(s.namaPanggilan)}</span>
+        <div class="flex gap-2">
+          <button class="text-sm px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 font-medium">Input buku</button>
+          <button class="text-sm px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 font-medium">Riwayat</button>
+        </div>
+      `;
+      const [btnInput, btnRiwayat] = card.querySelectorAll('button');
+      btnInput.onclick = () => bukaModalInput(s, kelas);
+      btnRiwayat.onclick = () => bukaModalRiwayat(s, kelas);
+      list.appendChild(card);
+    });
+
+    tampilkanViewSiswa();
+  } catch (err) {
+    alert('Gagal memuat daftar siswa: ' + err.message);
+  } finally {
+    tampilkanLoading(false);
+  }
+}
+
+// ---------- MODAL INPUT BUKU (MULTI JUDUL) ----------
+function bukaModalInput(siswa, kelas) {
+  siswaAktif = { id: siswa.id, namaLengkap: siswa.namaLengkap, kelas: kelas };
+  document.getElementById('infoSiswaInput').textContent = `${siswa.namaPanggilan} - Kelas ${kelas}`;
+  document.getElementById('daftarInputBuku').innerHTML = '';
+  tambahBarisJudul();
+  document.getElementById('modalInput').classList.remove('hidden');
+}
+
+function tutupModalInput() {
+  document.getElementById('modalInput').classList.add('hidden');
+  siswaAktif = null;
+}
+
+function tambahBarisJudul() {
+  const container = document.getElementById('daftarInputBuku');
+  const idx = container.children.length + 1;
+
+  const row = document.createElement('input');
+  row.type = 'text';
+  row.placeholder = `Judul buku ${idx}`;
+  row.className = 'w-full border border-slate-300 rounded-lg px-3 py-2 text-sm';
+  container.appendChild(row);
+}
+
+async function simpanSemuaBuku() {
+  if (!siswaAktif) return;
+
+  const inputs = document.querySelectorAll('#daftarInputBuku input');
+  const daftarBuku = Array.from(inputs)
+    .map(el => el.value.trim())
+    .filter(v => v.length > 0);
+
+  if (daftarBuku.length === 0) {
+    alert('Isi minimal satu judul buku');
+    return;
+  }
+
+  const btn = document.getElementById('btnSimpan');
+  btn.disabled = true;
+  btn.textContent = 'Menyimpan...';
+
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' }, // hindari CORS preflight di Apps Script
+      body: JSON.stringify({
+        action: 'simpanBuku',
+        idSiswa: siswaAktif.id,
+        namaSiswa: siswaAktif.namaLengkap,
+        kelas: siswaAktif.kelas,
+        daftarBuku: daftarBuku
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    alert(`${data.jumlahTersimpan} judul buku tersimpan untuk tanggal ${data.tanggal}`);
+    tutupModalInput();
+  } catch (err) {
+    alert('Gagal menyimpan: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Simpan semua';
+  }
+}
+
+// ---------- MODAL RIWAYAT ----------
+async function bukaModalRiwayat(siswa, kelas) {
+  document.getElementById('infoSiswaRiwayat').textContent = `${siswa.namaPanggilan} - Kelas ${kelas}`;
+  document.getElementById('listRiwayat').innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Memuat...</p>';
+  document.getElementById('modalRiwayat').classList.remove('hidden');
+
+  try {
+    const res = await fetch(`${WEBAPP_URL}?action=getRiwayat&idSiswa=${encodeURIComponent(siswa.id)}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    const list = document.getElementById('listRiwayat');
+    list.innerHTML = '';
+
+    if (data.riwayat.length === 0) {
+      list.innerHTML = '<p class="text-sm text-slate-400 text-center py-6">Belum ada riwayat buku dibaca</p>';
+      return;
+    }
+
+    data.riwayat.forEach(r => {
+      const item = document.createElement('div');
+      item.className = 'border border-slate-200 rounded-lg px-3 py-2';
+      item.innerHTML = `
+        <p class="text-sm font-medium text-slate-700">${escapeHtml(r.judul)}</p>
+        <p class="text-xs text-slate-400">${escapeHtml(r.tanggal)}</p>
+      `;
+      list.appendChild(item);
+    });
+  } catch (err) {
+    document.getElementById('listRiwayat').innerHTML =
+      `<p class="text-sm text-red-500 text-center py-4">Gagal memuat riwayat: ${escapeHtml(err.message)}</p>`;
+  }
+}
+
+function tutupModalRiwayat() {
+  document.getElementById('modalRiwayat').classList.add('hidden');
+}
+
+// ---------- UTIL ----------
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+</script>
+
+</body>
+</html>

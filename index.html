@@ -1,131 +1,590 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full bg-slate-50">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Pencatatan Buku Baca Siswa</title>
+<title>Daftar Bacaan Siswa - SDNP Tunas Global</title>
+
+<!-- Google Font: Poppins -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Poppins', 'sans-serif'],
+        },
+        colors: {
+          brand: {
+            primary: '#2563EB',
+            primaryHover: '#1D4ED8',
+            secondary: '#60A5FA',
+            lightBg: '#EFF6FF',
+            bg: '#F8FAFC',
+            card: '#FFFFFF',
+            border: '#E5E7EB',
+            text: '#1E293B',
+            muted: '#64748B',
+          }
+        },
+        boxShadow: {
+          'soft-sm': '0 2px 8px 0 rgba(37, 99, 235, 0.04), 0 1px 3px 0 rgba(0, 0, 0, 0.02)',
+          'soft-md': '0 10px 25px -5px rgba(37, 99, 235, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.02)',
+          'soft-lg': '0 20px 30px -10px rgba(37, 99, 235, 0.12), 0 10px 15px -5px rgba(0, 0, 0, 0.04)',
+        },
+        borderRadius: {
+          'xl': '12px',
+          '2xl': '16px',
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  :root {
+    --sidebar-width: 260px;
+    --sidebar-collapsed-width: 80px;
+    --transition-speed: 0.25s;
+    --primary-blue: #2563EB;
+    --primary-hover-bg: #EFF6FF;
+    --border-color: #E5E7EB;
+  }
+
+  body {
+    background-color: #F8FAFC;
+    color: #1E293B;
+  }
+
+  i[data-lucide], svg.lucide {
+    stroke-width: 2.2px !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+  }
+
+  .sidebar-desktop {
+    width: var(--sidebar-width);
+    transition: width var(--transition-speed) ease-in-out;
+  }
+
+  body.sidebar-collapsed .sidebar-desktop {
+    width: var(--sidebar-collapsed-width);
+  }
+
+  body.sidebar-collapsed .sidebar-text,
+  body.sidebar-collapsed .brand-text {
+    display: none;
+  }
+
+  body.sidebar-collapsed .sidebar-header {
+    justify-content: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  body.sidebar-collapsed .menu-item {
+    justify-content: center;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .menu-link {
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    border-radius: 12px;
+  }
+
+  .menu-link:hover {
+    background-color: var(--primary-hover-bg);
+  }
+
+  .menu-link.active {
+    background-color: var(--primary-hover-bg);
+    color: var(--primary-blue);
+    font-weight: 600;
+  }
+
+  .menu-link.active i,
+  .menu-link.active svg {
+    color: var(--primary-blue);
+  }
+
+  .mobile-bottom-link.active {
+    color: var(--primary-blue);
+    font-weight: 600;
+  }
+  .mobile-bottom-link.active i,
+  .mobile-bottom-link.active svg {
+    color: var(--primary-blue);
+  }
+</style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans text-slate-800">
+<body class="h-full flex flex-col font-sans antialiased text-brand-text bg-brand-bg">
 
-<div class="max-w-2xl mx-auto px-4 py-6">
+<div class="flex flex-1 h-full overflow-hidden">
 
-  <!-- HEADER -->
-  <div class="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">
-    <div>
-      <h1 class="text-xl font-bold text-slate-800">Pencatatan Buku Baca</h1>
-      <p class="text-xs text-slate-500">Sistem Informasi Bacaan Siswa</p>
+  <!-- DESKTOP / TABLET SIDEBAR -->
+  <aside id="sidebarDesktop" class="sidebar-desktop hidden md:flex flex-col bg-white border-r border-brand-border shadow-soft-sm z-30 relative flex-shrink-0">
+    
+    <!-- TOP AREA: LOGO & APP BRANDING -->
+    <div class="sidebar-header h-20 px-5 flex items-center justify-between border-b border-brand-border gap-3">
+      <div class="flex items-center gap-3 overflow-hidden">
+        <div class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 p-1.5 shadow-xs">
+          <img src="https://i.imgur.com/owOtwJ8.png" alt="Logo SDNP Tunas Global" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/100x100/ea580c/ffffff?text=TG';">
+        </div>
+        <div class="brand-text whitespace-nowrap overflow-hidden">
+          <h1 class="text-sm font-bold text-slate-800 tracking-tight truncate">Daftar Bacaan Siswa</h1>
+          <p class="text-[11px] font-medium text-slate-400 truncate">SDNP Tunas Global</p>
+        </div>
+      </div>
+      <button onclick="toggleSidebarCollapse()" title="Sembunyikan/Tampilkan Sidebar" class="p-2 rounded-xl text-slate-400 hover:text-brand-primary hover:bg-slate-100 transition flex-shrink-0">
+        <i data-lucide="panel-left-close" id="collapseIcon" class="w-5 h-5"></i>
+      </button>
     </div>
-    <span id="tahunAjaranLabel" class="text-xs font-semibold px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-200"></span>
-  </div>
 
-  <!-- BANNER STATUS KONEKSI / DEMO MODE -->
-  <div id="statusBanner" class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center justify-between">
-    <div class="flex items-center gap-2">
-      <span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-      <span id="statusText"><strong>Mode Demo:</strong> Menampilkan data contoh. Hubungkan ke Apps Script untuk data asli Google Sheets.</span>
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <a href="#" onclick="switchMainTab('dashboard')" id="nav-dashboard" class="menu-link active flex items-center gap-3.5 px-3.5 py-3 text-xs text-slate-600 hover:text-brand-primary">
+        <div class="w-6 h-6 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+        </div>
+        <span class="sidebar-text truncate">Dashboard</span>
+      </a>
+
+      <a href="#" onclick="switchMainTab('laporan')" id="nav-laporan" class="menu-link flex items-center gap-3.5 px-3.5 py-3 text-xs text-slate-600 hover:text-brand-primary">
+        <div class="w-6 h-6 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="file-text" class="w-5 h-5"></i>
+        </div>
+        <span class="sidebar-text truncate">Laporan</span>
+      </a>
+    </nav>
+
+    <!-- FOOTER INFO BADGE -->
+    <div class="p-3 border-t border-brand-border">
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+        </div>
+        <div class="sidebar-text overflow-hidden">
+          <p id="labelTahunAjaranSidebar" class="text-[11px] font-bold text-slate-700 truncate">TA 2025/2026</p>
+          <p class="text-[10px] text-slate-400 font-medium">Tahun Ajaran</p>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- BREADCRUMB / TOMBOL KEMBALI -->
-  <div id="breadcrumb" class="hidden mb-4">
-    <button onclick="tampilkanViewKelas()" class="text-xs font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs">
-      &larr; Kembali ke daftar kelas
-    </button>
-  </div>
+  </aside>
 
-  <!-- LOADING INDICATOR -->
-  <div id="loading" class="text-center text-slate-500 py-12">
-    <div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent mb-2"></div>
-    <p class="text-xs font-medium">Memuat data dari Google Sheets...</p>
-  </div>
+  <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
 
-  <!-- VIEW 1: PILIH KELAS -->
-  <div id="viewKelas" class="hidden">
-    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Pilih Kelas</p>
-    <div id="gridKelas" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
-  </div>
+    <!-- TOP HEADER NAVBAR FOR MAIN CONTENT -->
+    <header class="h-16 bg-brand-primary border-b border-blue-700 px-4 sm:px-6 flex items-center justify-between flex-shrink-0 shadow-md">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center md:hidden p-1 flex-shrink-0 backdrop-blur-xs">
+          <img src="https://i.imgur.com/owOtwJ8.png" alt="Logo SDNP Tunas Global" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/100x100/ea580c/ffffff?text=TG';">
+        </div>
+        <div>
+          <h2 id="headerTitle" class="text-base font-bold text-white tracking-tight">Daftar Bacaan Siswa</h2>
+          <p id="headerSubtitle" class="text-[11px] text-blue-100 font-medium hidden sm:block">SDNP Tunas Global</p>
+        </div>
+      </div>
 
-  <!-- VIEW 2: DAFTAR SISWA -->
-  <div id="viewSiswa" class="hidden">
-    <div class="flex justify-between items-center mb-3">
-      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Daftar Siswa Kelas <span id="labelKelasAktif" class="text-slate-800 font-bold"></span></p>
-    </div>
-    <div id="listSiswa" class="space-y-2"></div>
+      <div class="flex items-center gap-3">
+        <span id="tahunAjaranLabel" class="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 bg-white/15 text-white rounded-xl border border-white/20 shadow-2xs backdrop-blur-xs">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-200"></i>
+          <span>TA -/-</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 pb-24 md:pb-6">
+
+      <!-- BANNER STATUS KONEKSI / DEMO MODE -->
+      <div id="statusBanner" class="p-4 bg-amber-50/80 border border-amber-200/80 rounded-2xl text-xs text-amber-800 flex items-center justify-between gap-3 shadow-soft-sm">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 border border-amber-200">
+            <i data-lucide="database" class="w-4 h-4"></i>
+          </div>
+          <span id="statusText" class="font-medium">
+            <strong class="font-semibold">Mode Demo:</strong> Menampilkan data sampel.
+          </span>
+        </div>
+      </div>
+
+      <div id="viewDashboard" class="space-y-6">
+        
+        <!-- STATS CARDS (3 COLUMNS WITH DOUBLED ICON SIZE) -->
+        <div id="statSection" class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-6">
+          
+          <!-- Card 1: Total Buku -->
+          <div class="bg-brand-card p-4 sm:p-5 rounded-2xl border border-brand-border shadow-soft-sm flex items-center sm:flex-col sm:items-start justify-between relative overflow-hidden transition-all duration-200 hover:shadow-soft-md gap-3">
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Buku</span>
+              <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 flex-shrink-0">
+                <i data-lucide="book-open" class="w-9 h-9 sm:w-10 sm:h-10"></i>
+              </div>
+            </div>
+            <div class="text-right sm:text-left">
+              <p id="statTotalBuku" class="text-xl sm:text-2xl font-bold text-slate-800">0</p>
+              <p class="text-[10px] sm:text-[11px] font-medium text-slate-400 mt-0.5">buku telah dicatat</p>
+            </div>
+          </div>
+
+          <!-- Card 2: Top Siswa -->
+          <div class="bg-brand-card p-4 sm:p-5 rounded-2xl border border-brand-border shadow-soft-sm flex items-center sm:flex-col sm:items-start justify-between relative overflow-hidden transition-all duration-200 hover:shadow-soft-md gap-3">
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Top Siswa</span>
+              <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center border border-amber-100 flex-shrink-0">
+                <i data-lucide="trophy" class="w-9 h-9 sm:w-10 sm:h-10"></i>
+              </div>
+            </div>
+            <div class="text-right sm:text-left">
+              <p id="statTopSiswaNama" class="text-sm sm:text-base font-bold text-slate-800 truncate max-w-[150px] sm:max-w-none">-</p>
+              <p id="statTopSiswaJumlah" class="text-[10px] sm:text-[11px] font-medium text-amber-600 mt-0.5">0 buku</p>
+            </div>
+          </div>
+
+          <!-- Card 3: Top Kelas -->
+          <div class="bg-brand-card p-4 sm:p-5 rounded-2xl border border-brand-border shadow-soft-sm flex items-center sm:flex-col sm:items-start justify-between relative overflow-hidden transition-all duration-200 hover:shadow-soft-md gap-3">
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Top Kelas</span>
+              <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center border border-cyan-100 flex-shrink-0">
+                <i data-lucide="school" class="w-9 h-9 sm:w-10 sm:h-10"></i>
+              </div>
+            </div>
+            <div class="text-right sm:text-left">
+              <p id="statTopKelasNama" class="text-sm sm:text-base font-bold text-slate-800 truncate max-w-[150px] sm:max-w-none">-</p>
+              <p id="statTopKelasJumlah" class="text-[10px] sm:text-[11px] font-medium text-cyan-600 mt-0.5">0 buku</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- BREADCRUMB BUTTON -->
+        <div id="breadcrumb" class="hidden">
+          <button onclick="tampilkanViewKelas()" class="inline-flex items-center gap-2.5 text-xs font-semibold text-brand-primary hover:text-blue-700 bg-white px-4 py-2.5 rounded-2xl border border-brand-border shadow-soft-sm hover:shadow-soft-md transition-all">
+            <div class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+            </div>
+            <span>Kembali ke daftar kelas</span>
+          </button>
+        </div>
+
+        <!-- GRID PILIH KELAS (2 COLUMNS ON MOBILE) -->
+        <div id="viewKelas" class="space-y-4">
+          <div class="flex items-center gap-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <div class="w-7 h-7 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center border border-cyan-200">
+              <i data-lucide="layout-grid" class="w-4 h-4"></i>
+            </div>
+            <span>Pilih Kelas</span>
+          </div>
+          <div id="gridKelas" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5"></div>
+        </div>
+
+        <!-- LIST SISWA KELAS -->
+        <div id="viewSiswa" class="hidden space-y-4">
+          <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-brand-border shadow-soft-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center border border-violet-200">
+                <i data-lucide="users" class="w-4.5 h-4.5"></i>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Daftar Siswa</p>
+                <p class="text-sm font-bold text-slate-800">Kelas <span id="labelKelasAktif"></span></p>
+              </div>
+            </div>
+          </div>
+          <div id="listSiswa" class="space-y-3"></div>
+        </div>
+
+      </div>
+
+      <!-- VIEW 2: LAPORAN -->
+      <div id="viewLaporan" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-brand-border shadow-soft-sm space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-200 flex-shrink-0">
+                <i data-lucide="file-text" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-800 text-base">Laporan Catatan Bacaan</h3>
+                <p class="text-xs text-slate-400 font-medium">Rekapitulasi seluruh buku dari Sheet Log_Baca</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="bukaModalPasswordSheet()" class="px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-semibold flex items-center gap-2 transition">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Buka Sheet
+              </button>
+              <button onclick="muatLaporanLengkap()" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-semibold flex items-center gap-2 transition">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Segarkan
+              </button>
+            </div>
+          </div>
+
+          <div id="tabelLaporanContainer" class="overflow-x-auto pt-2">
+            <table class="w-full text-xs text-left text-slate-700">
+              <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[10px] border-b border-brand-border">
+                <tr>
+                  <th class="p-3">Tanggal</th>
+                  <th class="p-3">Nama Siswa</th>
+                  <th class="p-3">Kelas</th>
+                  <th class="p-3">Judul Buku</th>
+                </tr>
+              </thead>
+              <tbody id="bodyTabelLaporan" class="divide-y divide-slate-100">
+                <tr>
+                  <td colspan="4" class="p-4 text-center text-slate-400 font-medium">Klik segarkan untuk memuat data laporan...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
   </div>
 
 </div>
 
+<!-- MOBILE BOTTOM NAVIGATION BAR -->
+<nav id="mobileBottomNav" class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-brand-border z-40 h-16 px-2 flex items-center justify-around shadow-soft-lg">
+  <button onclick="switchMainTab('dashboard')" id="bottom-nav-dashboard" class="mobile-bottom-link active flex flex-col items-center justify-center w-full h-full text-slate-400 transition-all py-1">
+    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+    <span class="text-[10px] font-semibold mt-0.5">Dashboard</span>
+  </button>
+  <button onclick="switchMainTab('laporan')" id="bottom-nav-laporan" class="mobile-bottom-link flex flex-col items-center justify-center w-full h-full text-slate-400 transition-all py-1">
+    <i data-lucide="file-text" class="w-5 h-5"></i>
+    <span class="text-[10px] font-semibold mt-0.5">Laporan</span>
+  </button>
+</nav>
+
 <!-- MODAL: INPUT BUKU -->
 <div id="modalInput" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-  <div class="bg-white rounded-xl w-full max-w-md p-5 shadow-xl border border-slate-100">
-    <h2 class="font-bold text-slate-800 text-base mb-0.5">Input Buku Dibaca</h2>
-    <p id="infoSiswaInput" class="text-xs text-slate-500 mb-4 font-medium"></p>
+  <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-soft-lg border border-brand-border space-y-5">
+    
+    <div class="flex items-start justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200 flex-shrink-0">
+          <i data-lucide="book-plus" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h2 class="font-bold text-slate-800 text-base">Input Buku Dibaca</h2>
+          <p id="infoSiswaInput" class="text-xs text-slate-500 font-medium"></p>
+        </div>
+      </div>
+      <button onclick="tutupModalInput()" class="text-slate-400 hover:text-slate-600 p-1 rounded-xl hover:bg-slate-100 transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
 
-    <div id="daftarInputBuku" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+    <div id="daftarInputBuku" class="space-y-3 max-h-60 overflow-y-auto pr-1"></div>
 
-    <button onclick="tambahBarisJudul()" class="mt-3 text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
-      + Tambah buku lain
+    <button onclick="tambahBarisJudul()" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 py-1.5 px-2.5 rounded-xl hover:bg-emerald-50 transition">
+      <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i>
+      <span>Tambah buku lain</span>
     </button>
 
-    <div class="flex gap-2 mt-5 pt-3 border-t border-slate-100">
-      <button onclick="tutupModalInput()" class="flex-1 py-2 text-xs rounded-lg border border-slate-300 text-slate-600 font-medium hover:bg-slate-50">Batal</button>
-      <button onclick="simpanSemuaBuku()" id="btnSimpan" class="flex-1 py-2 text-xs rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-xs">Simpan semua</button>
+    <div class="flex gap-3 pt-3 border-t border-brand-border">
+      <button onclick="tutupModalInput()" class="flex-1 py-2.5 text-xs rounded-2xl border border-brand-border text-slate-600 font-semibold hover:bg-slate-50 transition">Batal</button>
+      <button onclick="simpanSemuaBuku()" id="btnSimpan" class="flex-1 py-2.5 text-xs rounded-2xl bg-brand-primary text-white font-semibold hover:bg-blue-700 shadow-soft-sm transition flex items-center justify-center gap-1.5">
+        <i data-lucide="check" class="w-4 h-4"></i>
+        <span>Simpan semua</span>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: RIWAYAT BACA -->
 <div id="modalRiwayat" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-  <div class="bg-white rounded-xl w-full max-w-md p-5 max-h-[80vh] flex flex-col shadow-xl border border-slate-100">
-    <h2 class="font-bold text-slate-800 text-base mb-0.5">Riwayat Baca</h2>
-    <p id="infoSiswaRiwayat" class="text-xs text-slate-500 mb-4 font-medium"></p>
+  <div class="bg-white rounded-2xl w-full max-w-md p-6 max-h-[80vh] flex flex-col shadow-soft-lg border border-brand-border">
+    
+    <div class="flex items-start justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-200 flex-shrink-0">
+          <i data-lucide="file-text" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h2 class="font-bold text-slate-800 text-base">Riwayat Baca</h2>
+          <p id="infoSiswaRiwayat" class="text-xs text-slate-500 font-medium"></p>
+        </div>
+      </div>
+      <button onclick="tutupModalRiwayat()" class="text-slate-400 hover:text-slate-600 p-1 rounded-xl hover:bg-slate-100 transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
 
-    <div id="listRiwayat" class="space-y-2 overflow-y-auto flex-1 pr-1"></div>
+    <div id="listRiwayat" class="space-y-3 overflow-y-auto flex-1 pr-1"></div>
 
-    <button onclick="tutupModalRiwayat()" class="mt-4 py-2 text-xs rounded-lg border border-slate-300 text-slate-600 font-medium hover:bg-slate-50">Tutup</button>
+    <button onclick="tutupModalRiwayat()" class="mt-5 py-2.5 text-xs rounded-2xl border border-brand-border text-slate-600 font-semibold hover:bg-slate-50 transition">Tutup</button>
   </div>
 </div>
 
-<!-- CUSTOM NOTIFICATION BOX -->
-<div id="alertBox" class="hidden fixed bottom-4 right-4 bg-slate-800 text-white text-xs px-4 py-3 rounded-xl shadow-xl z-50 flex items-center gap-3">
-  <span id="alertMessage"></span>
-  <button onclick="tutupAlert()" class="text-slate-400 hover:text-white font-bold">&times;</button>
+<!-- MODAL: PASSWORD SHEET -->
+<div id="modalPasswordSheet" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-2xl w-full max-w-sm p-6 shadow-soft-lg border border-brand-border space-y-4">
+    <div class="flex items-start justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200 flex-shrink-0">
+          <i data-lucide="lock" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h2 class="font-bold text-slate-800 text-base">Akses Google Sheets</h2>
+          <p class="text-xs text-slate-500 font-medium">Masukkan kata sandi untuk membuka sheet</p>
+        </div>
+      </div>
+      <button onclick="tutupModalPasswordSheet()" class="text-slate-400 hover:text-slate-600 p-1 rounded-xl hover:bg-slate-100 transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <div class="space-y-2">
+      <input type="password" id="inputPasswordSheet" placeholder="Masukkan password..." onkeydown="if(event.key==='Enter') verifikasiPasswordSheet()" class="w-full border border-brand-border rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition">
+      <p id="errorPasswordSheet" class="text-[11px] font-medium text-rose-500 hidden">Password salah! Silakan coba lagi.</p>
+    </div>
+
+    <div class="flex gap-3 pt-2">
+      <button onclick="tutupModalPasswordSheet()" class="flex-1 py-2.5 text-xs rounded-2xl border border-brand-border text-slate-600 font-semibold hover:bg-slate-50 transition">Batal</button>
+      <button onclick="verifikasiPasswordSheet()" class="flex-1 py-2.5 text-xs rounded-2xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition flex items-center justify-center gap-1.5">
+        <i data-lucide="external-link" class="w-4 h-4"></i>
+        <span>Buka Sheet</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION TOAST -->
+<div id="alertBox" class="hidden fixed bottom-20 sm:bottom-6 right-6 bg-slate-900 text-white text-xs px-4 py-3.5 rounded-2xl shadow-soft-lg z-50 flex items-center gap-3 border border-slate-700">
+  <div class="w-6 h-6 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center flex-shrink-0">
+    <i data-lucide="database" class="w-4 h-4"></i>
+  </div>
+  <span id="alertMessage" class="font-medium"></span>
+  <button onclick="tutupAlert()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+    <i data-lucide="x" class="w-4 h-4"></i>
+  </button>
 </div>
 
 <script>
-// ============================================================
-// GANTI dengan URL Web App Apps Script (berakhiran /exec)
-// ============================================================
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyE1eoQaOpPH4anfoZm-vOuOehIu5l_LgEHigH-XIy-PvRvCBrLFjoRCv-1JsOokPzGGA/exec';
+// CONFIG & STATE
+let WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyE1eoQaOpPH4anfoZm-vOuOehIu5l_LgEHigH-XIy-PvRvCBrLFjoRCv-1JsOokPzGGA/exec';
+
 
 let siswaAktif = null;
-let CACHE_SISWA = []; // Memori lokal untuk menyimpan data siswa (optimasi kecepatan)
+let CACHE_SISWA = [];
 
-// DATA DEMO (Ditampilkan otomatis jika WEBAPP_URL belum diisi / invalid)
+// DATA DEMO SAMPEL
 const MOCK_DATA = {
   tahunAjaran: '2025/2026',
-  kelas: ['7A', '7B', '8A', '8B', '9A', '9B'],
+  kelas: ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B', '6A', '6B'],
   siswa: [
-    { id: '1001', namaPanggilan: 'Andi', namaLengkap: 'Andi Firmansyah', kelas: '7A' },
-    { id: '1002', namaPanggilan: 'Budi', namaLengkap: 'Budi Santoso', kelas: '7A' },
-    { id: '1003', namaPanggilan: 'Siti', namaLengkap: 'Siti Rahma', kelas: '7A' },
-    { id: '2001', namaPanggilan: 'Citra', namaLengkap: 'Citra Dewi', kelas: '7B' },
-    { id: '2002', namaPanggilan: 'Doni', namaLengkap: 'Doni Setiawan', kelas: '7B' },
-    { id: '3001', namaPanggilan: 'Eka', namaLengkap: 'Eka Putri', kelas: '8A' }
+    { id: '1001', namaPanggilan: 'Andi', namaLengkap: 'Andi Firmansyah', kelas: '1A' },
+    { id: '1002', namaPanggilan: 'Budi', namaLengkap: 'Budi Santoso', kelas: '1A' },
+    { id: '1003', namaPanggilan: 'Siti', namaLengkap: 'Siti Rahma', kelas: '1A' },
+    { id: '2001', namaPanggilan: 'Citra', namaLengkap: 'Citra Dewi', kelas: '1B' },
+    { id: '2002', namaPanggilan: 'Doni', namaLengkap: 'Doni Setiawan', kelas: '1B' },
+    { id: '3001', namaPanggilan: 'Eka', namaLengkap: 'Eka Putri', kelas: '2A' }
   ],
-  riwayat: {
-    '1001': [
-      { tanggal: '20/07/2026', judul: 'Laskar Pelangi' },
-      { tanggal: '21/07/2026', judul: 'Bumi Manusia' }
-    ]
-  }
+  logBaca: [
+    { idSiswa: '1001', namaSiswa: 'Andi Firmansyah', kelas: '1A', judul: 'Laskar Pelangi', tanggal: '20/07/2026' },
+    { idSiswa: '1001', namaSiswa: 'Andi Firmansyah', kelas: '1A', judul: 'Bumi Manusia', tanggal: '21/07/2026' },
+    { idSiswa: '1001', namaSiswa: 'Andi Firmansyah', kelas: '1A', judul: 'Filosofi Teras', tanggal: '22/07/2026' },
+    { idSiswa: '1002', namaSiswa: 'Budi Santoso', kelas: '1A', judul: 'Negeri 5 Menara', tanggal: '22/07/2026' },
+    { idSiswa: '2001', namaSiswa: 'Citra Dewi', kelas: '1B', judul: 'Sebuah Seni', tanggal: '21/07/2026' }
+  ]
 };
+
+function updateIcons() {
+  if (window.lucide) {
+    lucide.createIcons({
+      attrs: { 'stroke-width': 2.2 }
+    });
+  }
+}
+
+function toggleSidebarCollapse() {
+  document.body.classList.toggle('sidebar-collapsed');
+  const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+  const icon = document.getElementById('collapseIcon');
+  if (icon) {
+    icon.setAttribute('data-lucide', isCollapsed ? 'panel-left-open' : 'panel-left-close');
+    updateIcons();
+  }
+}
+
+function switchMainTab(tab) {
+  document.getElementById('viewDashboard').classList.add('hidden');
+  document.getElementById('viewLaporan').classList.add('hidden');
+
+  document.querySelectorAll('.menu-link, .mobile-bottom-link').forEach(el => el.classList.remove('active'));
+
+  const titleEl = document.getElementById('headerTitle');
+  const subEl = document.getElementById('headerSubtitle');
+
+  if (tab === 'dashboard') {
+    document.getElementById('viewDashboard').classList.remove('hidden');
+    document.getElementById('nav-dashboard')?.classList.add('active');
+    document.getElementById('bottom-nav-dashboard')?.classList.add('active');
+    
+    tampilkanViewKelas();
+
+    titleEl.textContent = 'Daftar Bacaan Siswa';
+    subEl.textContent = 'SDNP Tunas Global';
+  } else if (tab === 'laporan') {
+    document.getElementById('viewLaporan').classList.remove('hidden');
+    document.getElementById('nav-laporan')?.classList.add('active');
+    document.getElementById('bottom-nav-laporan')?.classList.add('active');
+    titleEl.textContent = 'Laporan Bacaan';
+    subEl.textContent = 'Rekapitulasi log bacaan seluruh siswa SDNP Tunas Global';
+    muatLaporanLengkap();
+  }
+
+  updateIcons();
+}
+
+function tampilkanViewKelas() {
+  document.getElementById('viewSiswa').classList.add('hidden');
+  document.getElementById('breadcrumb').classList.add('hidden');
+  document.getElementById('statSection')?.classList.remove('hidden');
+  document.getElementById('viewKelas').classList.remove('hidden');
+
+  const titleEl = document.getElementById('headerTitle');
+  const subEl = document.getElementById('headerSubtitle');
+  if (titleEl) titleEl.textContent = 'Daftar Bacaan Siswa';
+  if (subEl) subEl.textContent = 'SDNP Tunas Global';
+
+  updateIcons();
+}
+
+function tampilkanViewSiswa() {
+  document.getElementById('viewKelas').classList.add('hidden');
+  document.getElementById('statSection')?.classList.add('hidden');
+  document.getElementById('breadcrumb').classList.remove('hidden');
+  document.getElementById('viewSiswa').classList.remove('hidden');
+  updateIcons();
+}
+
+function simpanPengaturanUrl() {
+  const val = document.getElementById('inputWebAppUrl').value.trim();
+  if (val) {
+    WEBAPP_URL = val;
+    showAlert('URL Web App berhasil disimpan!');
+    muatDataAwal();
+  }
+}
 
 function showAlert(msg) {
   const box = document.getElementById('alertBox');
   document.getElementById('alertMessage').textContent = msg;
   box.classList.remove('hidden');
+  updateIcons();
   setTimeout(() => { box.classList.add('hidden'); }, 4000);
 }
 
@@ -135,27 +594,58 @@ function tutupAlert() {
 
 window.addEventListener('DOMContentLoaded', () => {
   muatDataAwal();
+  updateIcons();
 });
 
-function tampilkanLoading(tampil) {
-  document.getElementById('loading').classList.toggle('hidden', !tampil);
+function updateStatistik(stats) {
+  document.getElementById('statTotalBuku').textContent = stats.totalBuku || 0;
+  
+  document.getElementById('statTopSiswaNama').textContent = stats.topSiswa ? stats.topSiswa.nama : '-';
+  document.getElementById('statTopSiswaJumlah').textContent = stats.topSiswa ? `${stats.topSiswa.jumlah} buku` : '0 buku';
+
+  document.getElementById('statTopKelasNama').textContent = stats.topKelas ? `Kelas ${stats.topKelas.nama}` : '-';
+  document.getElementById('statTopKelasJumlah').textContent = stats.topKelas ? `${stats.topKelas.jumlah} buku` : '0 buku';
 }
 
-function tampilkanViewKelas() {
-  document.getElementById('viewSiswa').classList.add('hidden');
-  document.getElementById('breadcrumb').classList.add('hidden');
-  document.getElementById('viewKelas').classList.remove('hidden');
-}
+function kalkulasiStatistikMock() {
+  const total = MOCK_DATA.logBaca.length;
+  const countSiswa = {};
+  const countKelas = {};
 
-function tampilkanViewSiswa() {
-  document.getElementById('viewKelas').classList.add('hidden');
-  document.getElementById('breadcrumb').classList.remove('hidden');
-  document.getElementById('viewSiswa').classList.remove('hidden');
+  MOCK_DATA.logBaca.forEach(log => {
+    if (!countSiswa[log.namaSiswa]) countSiswa[log.namaSiswa] = 0;
+    countSiswa[log.namaSiswa]++;
+
+    if (!countKelas[log.kelas]) countKelas[log.kelas] = 0;
+    countKelas[log.kelas]++;
+  });
+
+  let topSiswa = null;
+  let maxSiswa = 0;
+  Object.keys(countSiswa).forEach(nama => {
+    if (countSiswa[nama] > maxSiswa) {
+      maxSiswa = countSiswa[nama];
+      topSiswa = { nama: nama, jumlah: maxSiswa };
+    }
+  });
+
+  let topKelas = null;
+  let maxKelas = 0;
+  Object.keys(countKelas).forEach(kls => {
+    if (countKelas[kls] > maxKelas) {
+      maxKelas = countKelas[kls];
+      topKelas = { nama: kls, jumlah: maxKelas };
+    }
+  });
+
+  updateStatistik({
+    totalBuku: total,
+    topSiswa: topSiswa,
+    topKelas: topKelas
+  });
 }
 
 async function muatDataAwal() {
-  tampilkanLoading(true);
-
   const isSheetUrl = WEBAPP_URL.includes('docs.google.com/spreadsheets');
   const isInvalidUrl = !WEBAPP_URL || WEBAPP_URL === 'GANTI_DENGAN_URL_WEB_APP_ANDA' || isSheetUrl;
 
@@ -165,37 +655,64 @@ async function muatDataAwal() {
     banner.classList.remove('hidden');
 
     if (isSheetUrl) {
-      banner.className = "mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800";
-      text.innerHTML = `<strong>⚠️ URL Salah:</strong> URL yang dimasukkan adalah link Spreadsheet. Silakan gunakan <strong>URL Web App Apps Script</strong> (berakhiran <code>/exec</code>) dari menu <em>Deploy &gt; New Deployment</em>.`;
+      banner.className = "p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-800 shadow-soft-sm flex items-center gap-3";
+      text.innerHTML = `<strong>⚠️ URL Salah:</strong> URL yang dimasukkan adalah link Spreadsheet. Silakan gunakan <strong>URL Web App Apps Script</strong> (berakhiran <code>/exec</code>).`;
     } else {
-      text.innerHTML = `<strong>Mode Demo:</strong> Menampilkan data contoh. Hubungkan ke Apps Script untuk data asli.`;
+      text.innerHTML = `<strong>Mode Demo:</strong> Menampilkan data sampel.`;
     }
 
-    document.getElementById('tahunAjaranLabel').textContent = `TA ${MOCK_DATA.tahunAjaran} (Demo)`;
+    const badgeHTML = `<i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-200"></i><span>TA ${MOCK_DATA.tahunAjaran} (Demo)</span>`;
+    document.getElementById('tahunAjaranLabel').innerHTML = badgeHTML;
+    document.getElementById('labelTahunAjaranSidebar').textContent = `TA ${MOCK_DATA.tahunAjaran}`;
+
     CACHE_SISWA = MOCK_DATA.siswa;
     renderGridKelas(MOCK_DATA.kelas);
-    tampilkanLoading(false);
+    kalkulasiStatistikMock();
+    updateIcons();
     return;
   }
 
   document.getElementById('statusBanner').classList.add('hidden');
 
   try {
-    // Pengambilan data tunggal (getInitialData)
     const res = await fetch(`${WEBAPP_URL}?action=getInitialData`);
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
-    document.getElementById('tahunAjaranLabel').textContent = data.tahunAjaranAktif ? `TA ${data.tahunAjaranAktif}` : '';
+    const taText = `TA ${data.tahunAjaranAktif || '-'}`;
+    document.getElementById('tahunAjaranLabel').innerHTML = `<i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-200"></i><span>${taText}</span>`;
+    document.getElementById('labelTahunAjaranSidebar').textContent = taText;
+
     CACHE_SISWA = data.siswa || [];
     renderGridKelas(data.kelas);
+    
+    if (data.stats) {
+      updateStatistik(data.stats);
+    }
   } catch (err) {
     showAlert('Gagal terhubung ke Apps Script. Menggunakan mode demo.');
     CACHE_SISWA = MOCK_DATA.siswa;
     renderGridKelas(MOCK_DATA.kelas);
+    kalkulasiStatistikMock();
   } finally {
-    tampilkanLoading(false);
+    updateIcons();
   }
+}
+
+function getGradeConfig(kelas) {
+  const match = String(kelas).match(/\d+/);
+  const grade = match ? parseInt(match[0], 10) : 0;
+
+  const configs = {
+    1: { bg: 'bg-rose-50', border: 'border-rose-200', hoverBorder: 'hover:border-rose-500', hoverText: 'hover:text-rose-700', hoverBg: 'group-hover:bg-rose-100', text: 'text-rose-600', digit: '1' },
+    2: { bg: 'bg-amber-50', border: 'border-amber-200', hoverBorder: 'hover:border-amber-500', hoverText: 'hover:text-amber-700', hoverBg: 'group-hover:bg-amber-100', text: 'text-amber-600', digit: '2' },
+    3: { bg: 'bg-emerald-50', border: 'border-emerald-200', hoverBorder: 'hover:border-emerald-500', hoverText: 'hover:text-emerald-700', hoverBg: 'group-hover:bg-emerald-100', text: 'text-emerald-600', digit: '3' },
+    4: { bg: 'bg-cyan-50', border: 'border-cyan-200', hoverBorder: 'hover:border-cyan-500', hoverText: 'hover:text-cyan-700', hoverBg: 'group-hover:bg-cyan-100', text: 'text-cyan-600', digit: '4' },
+    5: { bg: 'bg-blue-50', border: 'border-blue-200', hoverBorder: 'hover:border-blue-500', hoverText: 'hover:text-blue-700', hoverBg: 'group-hover:bg-blue-100', text: 'text-blue-600', digit: '5' },
+    6: { bg: 'bg-violet-50', border: 'border-violet-200', hoverBorder: 'hover:border-violet-500', hoverText: 'hover:text-violet-700', hoverBg: 'group-hover:bg-violet-100', text: 'text-violet-600', digit: '6' }
+  };
+
+  return configs[grade] || { bg: 'bg-slate-50', border: 'border-slate-200', hoverBorder: 'hover:border-slate-500', hoverText: 'hover:text-slate-700', hoverBg: 'group-hover:bg-slate-100', text: 'text-slate-600', digit: '?' };
 }
 
 function renderGridKelas(daftarKelas) {
@@ -204,26 +721,37 @@ function renderGridKelas(daftarKelas) {
 
   if (!daftarKelas || daftarKelas.length === 0) {
     grid.innerHTML = `
-      <div class="col-span-full bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800 space-y-2">
-        <p class="font-bold">⚠️ Data Kelas Belum Ada di Google Sheets</p>
-        <p>Pastikan Sheet <strong>Master_Siswa</strong> sudah berisi data dan kolom D (Kelas) terisi.</p>
+      <div class="col-span-full bg-amber-50 border border-amber-200 rounded-2xl p-5 text-xs text-amber-800 space-y-2 shadow-soft-sm">
+        <p class="font-bold flex items-center gap-2">
+          <i data-lucide="database" class="w-4 h-4 text-amber-600"></i> Data Kelas Belum Ada di Google Sheets
+        </p>
+        <p>Pastikan Sheet <strong>Master_Siswa</strong> sudah berisi data dan kolom Kelas terisi.</p>
       </div>
     `;
   } else {
     daftarKelas.forEach(kelas => {
+      const cfg = getGradeConfig(kelas);
       const btn = document.createElement('button');
-      btn.className = 'py-3.5 px-3 rounded-xl bg-white border border-slate-200 shadow-xs text-slate-700 font-bold hover:border-blue-500 hover:text-blue-600 hover:shadow-md transition text-center text-sm';
-      btn.textContent = kelas;
+      btn.className = `p-2.5 sm:p-4 rounded-2xl bg-brand-card border border-brand-border shadow-soft-sm text-slate-700 font-bold ${cfg.hoverBorder} ${cfg.hoverText} hover:shadow-soft-md transition-all text-left text-xs sm:text-sm flex items-center gap-2.5 sm:gap-3.5 group`;
+      btn.innerHTML = `
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl ${cfg.bg} ${cfg.text} border ${cfg.border} ${cfg.hoverBg} flex items-center justify-center transition shadow-xs flex-shrink-0">
+          <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="5" ry="5"/>
+            <text x="12" y="16.2" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" stroke="none" font-family="Poppins, sans-serif">${cfg.digit}</text>
+          </svg>
+        </div>
+        <span class="truncate">Kelas ${escapeHtml(kelas)}</span>
+      `;
       btn.onclick = () => muatDaftarSiswa(kelas);
       grid.appendChild(btn);
     });
   }
 
   tampilkanViewKelas();
+  updateIcons();
 }
 
 function muatDaftarSiswa(kelas) {
-  // Tanpa loading / fetch tambahan -> Langsung saring dari CACHE_SISWA (Instan / 0s)
   const siswaList = CACHE_SISWA.filter(s => s.kelas && s.kelas.toLowerCase() === kelas.toLowerCase());
   renderListSiswa(siswaList, kelas);
 }
@@ -231,23 +759,46 @@ function muatDaftarSiswa(kelas) {
 function renderListSiswa(siswaList, kelas) {
   document.getElementById('labelKelasAktif').textContent = kelas;
 
+  const titleEl = document.getElementById('headerTitle');
+  const subEl = document.getElementById('headerSubtitle');
+  if (titleEl) titleEl.textContent = `Daftar Siswa - Kelas ${kelas}`;
+  if (subEl) subEl.textContent = `Kelola input & riwayat bacaan siswa Kelas ${kelas}`;
+
   const list = document.getElementById('listSiswa');
   list.innerHTML = '';
 
   if (!siswaList || siswaList.length === 0) {
-    list.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">Belum ada siswa terdaftar di kelas ini</p>';
+    list.innerHTML = `
+      <div class="bg-white p-8 rounded-2xl border border-brand-border text-center shadow-soft-sm">
+        <i data-lucide="users" class="w-8 h-8 text-violet-300 mx-auto mb-2"></i>
+        <p class="text-xs font-semibold text-slate-400">Belum ada siswa terdaftar di kelas ini</p>
+      </div>
+    `;
   } else {
     siswaList.forEach(s => {
       const card = document.createElement('div');
-      card.className = 'flex items-center justify-between bg-white border border-slate-200/80 rounded-xl px-4 py-3 shadow-xs';
+      card.className = 'flex items-center justify-between bg-brand-card border border-brand-border rounded-2xl px-3.5 py-3 sm:px-5 sm:py-3.5 shadow-soft-sm hover:shadow-soft-md transition-all';
       card.innerHTML = `
-        <span class="font-semibold text-slate-700 text-xs">${escapeHtml(s.namaPanggilan)}</span>
-        <div class="flex gap-2">
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100 transition">Input buku</button>
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 font-semibold hover:bg-slate-200 transition">Riwayat</button>
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-violet-50 text-violet-700 border border-violet-100 font-bold text-xs flex items-center justify-center flex-shrink-0">
+            ${escapeHtml(s.namaPanggilan.charAt(0).toUpperCase())}
+          </div>
+          <div class="min-w-0">
+            <p class="font-bold text-slate-800 text-xs truncate">${escapeHtml(s.namaPanggilan)}</p>
+            <p class="text-[10px] text-slate-400 font-medium hidden sm:block truncate">${escapeHtml(s.namaLengkap)}</p>
+          </div>
+        </div>
+        <div class="flex gap-1.5 sm:gap-2 flex-shrink-0">
+          <button class="btn-input inline-flex items-center gap-1 sm:gap-1.5 text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-50 text-emerald-700 font-semibold border border-emerald-100 hover:bg-emerald-100 transition">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Input
+          </button>
+          <button class="btn-riwayat inline-flex items-center gap-1 sm:gap-1.5 text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-orange-50 text-orange-700 font-semibold border border-orange-100 hover:bg-orange-100 transition">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Riwayat
+          </button>
         </div>
       `;
-      const [btnInput, btnRiwayat] = card.querySelectorAll('button');
+      const btnInput = card.querySelector('.btn-input');
+      const btnRiwayat = card.querySelector('.btn-riwayat');
       btnInput.onclick = () => bukaModalInput(s, kelas);
       btnRiwayat.onclick = () => bukaModalRiwayat(s, kelas);
       list.appendChild(card);
@@ -255,6 +806,7 @@ function renderListSiswa(siswaList, kelas) {
   }
 
   tampilkanViewSiswa();
+  updateIcons();
 }
 
 function bukaModalInput(siswa, kelas) {
@@ -263,6 +815,7 @@ function bukaModalInput(siswa, kelas) {
   document.getElementById('daftarInputBuku').innerHTML = '';
   tambahBarisJudul();
   document.getElementById('modalInput').classList.remove('hidden');
+  updateIcons();
 }
 
 function tutupModalInput() {
@@ -274,11 +827,14 @@ function tambahBarisJudul() {
   const container = document.getElementById('daftarInputBuku');
   const idx = container.children.length + 1;
 
-  const row = document.createElement('input');
-  row.type = 'text';
-  row.placeholder = `Judul buku ke-${idx}`;
-  row.className = 'w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500';
+  const row = document.createElement('div');
+  row.className = 'relative flex items-center';
+  row.innerHTML = `
+    <input type="text" placeholder="Judul buku ke-${idx}" class="w-full border border-brand-border rounded-xl pl-9 pr-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition font-medium text-slate-800" />
+    <i data-lucide="book" class="w-4 h-4 text-purple-500 absolute left-3"></i>
+  `;
   container.appendChild(row);
+  updateIcons();
 }
 
 async function simpanSemuaBuku() {
@@ -296,22 +852,33 @@ async function simpanSemuaBuku() {
 
   const btn = document.getElementById('btnSimpan');
   btn.disabled = true;
-  btn.textContent = 'Menyimpan...';
+  btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Menyimpan...`;
+  updateIcons();
 
   const isInvalidUrl = !WEBAPP_URL || WEBAPP_URL === 'GANTI_DENGAN_URL_WEB_APP_ANDA' || WEBAPP_URL.includes('docs.google.com/spreadsheets');
 
   if (isInvalidUrl) {
     setTimeout(() => {
-      if (!MOCK_DATA.riwayat[siswaAktif.id]) MOCK_DATA.riwayat[siswaAktif.id] = [];
       const now = new Date();
       const tglStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-      daftarBuku.forEach(j => MOCK_DATA.riwayat[siswaAktif.id].unshift({ tanggal: tglStr, judul: j }));
+      
+      daftarBuku.forEach(j => {
+        MOCK_DATA.logBaca.unshift({
+          idSiswa: siswaAktif.id,
+          namaSiswa: siswaAktif.namaLengkap,
+          kelas: siswaAktif.kelas,
+          judul: j,
+          tanggal: tglStr
+        });
+      });
 
+      kalkulasiStatistikMock();
       showAlert(`[Demo Mode] ${daftarBuku.length} judul buku berhasil tersimpan!`);
       tutupModalInput();
       btn.disabled = false;
-      btn.textContent = 'Simpan semua';
-    }, 300);
+      btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Simpan semua`;
+      updateIcons();
+    }, 400);
     return;
   }
 
@@ -330,25 +897,34 @@ async function simpanSemuaBuku() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
+    if (data.stats) {
+      updateStatistik(data.stats);
+    } else {
+      muatDataAwal();
+    }
+
     showAlert(`${data.jumlahTersimpan} judul buku tersimpan untuk tanggal ${data.tanggal}`);
     tutupModalInput();
   } catch (err) {
     showAlert('Gagal menyimpan: ' + err.message);
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Simpan semua';
+    btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Simpan semua`;
+    updateIcons();
   }
 }
 
 async function bukaModalRiwayat(siswa, kelas) {
   document.getElementById('infoSiswaRiwayat').textContent = `${siswa.namaPanggilan} - Kelas ${kelas}`;
-  document.getElementById('listRiwayat').innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Memuat...</p>';
+  document.getElementById('listRiwayat').innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Memuat riwayat...</p>';
   document.getElementById('modalRiwayat').classList.remove('hidden');
+  updateIcons();
 
   const isInvalidUrl = !WEBAPP_URL || WEBAPP_URL === 'GANTI_DENGAN_URL_WEB_APP_ANDA' || WEBAPP_URL.includes('docs.google.com/spreadsheets');
 
   if (isInvalidUrl) {
-    renderListRiwayat(MOCK_DATA.riwayat[siswa.id] || []);
+    const listSiswaLogs = MOCK_DATA.logBaca.filter(l => l.idSiswa === siswa.id);
+    renderListRiwayat(listSiswaLogs);
     return;
   }
 
@@ -369,23 +945,103 @@ function renderListRiwayat(riwayatList) {
   list.innerHTML = '';
 
   if (!riwayatList || riwayatList.length === 0) {
-    list.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat buku dibaca</p>';
+    list.innerHTML = `
+      <div class="text-center py-8">
+        <i data-lucide="book-open" class="w-8 h-8 text-purple-300 mx-auto mb-2"></i>
+        <p class="text-xs text-slate-400 font-medium">Belum ada riwayat buku dibaca</p>
+      </div>
+    `;
+    updateIcons();
     return;
   }
 
   riwayatList.forEach(r => {
     const item = document.createElement('div');
-    item.className = 'border border-slate-200 rounded-lg p-2.5 bg-slate-50';
+    item.className = 'border border-brand-border rounded-xl p-3 bg-slate-50 flex items-start gap-2.5';
     item.innerHTML = `
-      <p class="text-xs font-semibold text-slate-800">${escapeHtml(r.judul)}</p>
-      <p class="text-[10px] text-slate-400 mt-0.5">${escapeHtml(r.tanggal)}</p>
+      <i data-lucide="book" class="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0"></i>
+      <div>
+        <p class="text-xs font-semibold text-slate-800">${escapeHtml(r.judul)}</p>
+        <p class="text-[10px] text-slate-400 font-medium mt-0.5 flex items-center gap-1">
+          <i data-lucide="calendar" class="w-3 h-3 text-indigo-500"></i> ${escapeHtml(r.tanggal)}
+        </p>
+      </div>
     `;
     list.appendChild(item);
   });
+
+  updateIcons();
 }
 
 function tutupModalRiwayat() {
   document.getElementById('modalRiwayat').classList.add('hidden');
+}
+
+function bukaModalPasswordSheet() {
+  document.getElementById('inputPasswordSheet').value = '';
+  document.getElementById('errorPasswordSheet').classList.add('hidden');
+  document.getElementById('modalPasswordSheet').classList.remove('hidden');
+  setTimeout(() => document.getElementById('inputPasswordSheet').focus(), 100);
+  updateIcons();
+}
+
+function tutupModalPasswordSheet() {
+  document.getElementById('modalPasswordSheet').classList.add('hidden');
+}
+
+function verifikasiPasswordSheet() {
+  const pwd = document.getElementById('inputPasswordSheet').value.trim();
+  if (pwd === 'tuglo') {
+    tutupModalPasswordSheet();
+    window.open(SHEET_URL, '_blank');
+  } else {
+    document.getElementById('errorPasswordSheet').classList.remove('hidden');
+  }
+}
+
+async function muatLaporanLengkap() {
+  const tbody = document.getElementById('bodyTabelLaporan');
+  tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium">Memuat data dari sheet Log_Baca...</td></tr>';
+
+  const isInvalidUrl = !WEBAPP_URL || WEBAPP_URL === 'GANTI_DENGAN_URL_WEB_APP_ANDA' || WEBAPP_URL.includes('docs.google.com/spreadsheets');
+
+  if (isInvalidUrl) {
+    renderTabelLaporan(MOCK_DATA.logBaca);
+    return;
+  }
+
+  try {
+    const res = await fetch(`${WEBAPP_URL}?action=getLaporan`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    renderTabelLaporan(data.laporan || []);
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-rose-500 font-medium">Gagal memuat laporan: ${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+function renderTabelLaporan(dataLog) {
+  const tbody = document.getElementById('bodyTabelLaporan');
+  tbody.innerHTML = '';
+
+  if (!dataLog || dataLog.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada catatan buku dibaca.</td></tr>`;
+    return;
+  }
+
+  dataLog.forEach(log => {
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-slate-50 transition';
+    tr.innerHTML = `
+      <td class="p-3 font-medium text-slate-500">${escapeHtml(log.tanggal)}</td>
+      <td class="p-3 font-bold text-slate-800">${escapeHtml(log.namaSiswa)}</td>
+      <td class="p-3"><span class="px-2 py-0.5 rounded-md bg-cyan-50 text-cyan-700 font-bold border border-cyan-100">${escapeHtml(log.kelas)}</span></td>
+      <td class="p-3 font-medium text-purple-700 flex items-center gap-1.5"><i data-lucide="book" class="w-3.5 h-3.5"></i> ${escapeHtml(log.judul)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  updateIcons();
 }
 
 function escapeHtml(str) {

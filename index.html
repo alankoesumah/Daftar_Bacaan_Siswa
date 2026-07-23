@@ -855,7 +855,7 @@ async function simpanSemuaBuku() {
   btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Menyimpan...`;
   updateIcons();
 
-  const isInvalidUrl = !WEBAPP_URL || WEBAPP_URL === 'GANTI_DENGAN_URL_WEB_APP_ANDA' || WEBAPP_URL.includes('docs.google.com/spreadsheets');
+  const isInvalidUrl = !WEBAPP_URL || WEBAPP_URL === 'https://docs.google.com/spreadsheets/d/1imf1WCO2uzXKFnVxsih6oDu142Bk7RK6ErzfsPfnVPU/edit?gid=1949395987#gid=1949395987' || WEBAPP_URL.includes('docs.google.com/spreadsheets');
 
   if (isInvalidUrl) {
     setTimeout(() => {

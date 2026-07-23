@@ -1003,7 +1003,7 @@ async function muatLaporanLengkap() {
   const tbody = document.getElementById('bodyTabelLaporan');
   tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium">Memuat data dari sheet Log_Baca...</td></tr>';
 
-  const isInvalidUrl = !WEBAPP_URL || WEBAPP_URL === 'GANTI_DENGAN_URL_WEB_APP_ANDA' || WEBAPP_URL.includes('docs.google.com/spreadsheets');
+  const isInvalidUrl = !WEBAPP_URL || WEBAPP_URL === 'https://docs.google.com/spreadsheets/d/1imf1WCO2uzXKFnVxsih6oDu142Bk7RK6ErzfsPfnVPU/edit?gid=1949395987#gid=1949395987' || WEBAPP_URL.includes('docs.google.com/spreadsheets');
 
   if (isInvalidUrl) {
     renderTabelLaporan(MOCK_DATA.logBaca);
